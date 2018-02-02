@@ -9,7 +9,7 @@ Source data here: https://api.tfl.gov.uk/#BikePoint
 lein uberjar
 java -jar leyton-boris-bikes-app.jar <port>
 
-curl http://localhost:3000/
+curl http://localhost:3000/bikes
 
 ## License
 
