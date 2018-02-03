@@ -7,6 +7,7 @@
                  [integrant "0.4.0"]
                  [yada "1.2.6"]
                  [org.clojure/tools.logging "0.4.0"]
+                 [orchestra "2017.11.12-1"]
                  [clj-http "2.0.0"]]
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.11"]]}})

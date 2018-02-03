@@ -9,7 +9,7 @@
 (s/def ::commonName string?)
 (s/def ::availableBikes integer?)
 (s/def ::url string?)
-(s/def ::distance double?)
+(s/def ::distance pos?)
 
 (s/def ::bike-point
   (s/keys
@@ -66,6 +66,11 @@
     (take max-bike-points)
     (mapv shape-for-client)))
 
+(s/fdef bike-points-with-availability 
+  :ret  (s/every ::bike-point
+                    :min-count 1
+                    :max-count max-bike-points
+                    :distinct true))
 
 (defn bike-points-with-availability []
   (-> (bike-data)
