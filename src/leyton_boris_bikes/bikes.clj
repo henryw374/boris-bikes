@@ -1,7 +1,19 @@
 (ns leyton-boris-bikes.bikes
   (:require [clj-http.client :as client]
             [cheshire.core :as cheshire]
+            [clojure.spec.alpha :as s]
             [clojure.tools.logging :as log]))
+
+(s/def ::lat double?)
+(s/def ::lon double?)
+(s/def ::commonName string?)
+(s/def ::availableBikes integer?)
+(s/def ::url string?)
+(s/def ::distance double?)
+
+(s/def ::bike-point
+  (s/keys
+    :req-un [::lat ::lon ::commonName ::availableBikes ::url ::distance]))
 
 (defn distance [a b]
   (Math/sqrt
@@ -17,7 +29,7 @@
 (defn bike-data []
   (->
     (try
-      (let [{:keys [status body] :as response} (client/get tfl-bike-resource {:timeout 2})]
+      (let [{:keys [status body] :as response} (client/get tfl-bike-resource)]
         (if (= 200 status)
           {:data body
            :status :fresh}
@@ -33,7 +45,8 @@
        :additionalProperties
        (filter #(= "NbBikes" (:key %)))
        first
-       :value))
+       :value
+       (Integer/parseInt)))
 
 (defn shape-for-client [bike-point]
   (-> bike-point
@@ -43,7 +56,7 @@
                     :lat 
                     :commonName ])
       (update :url #(str tfl-host %))
-      (assoc :available-bikes (number-of-available-bikes bike-point))))
+      (assoc :availableBikes (number-of-available-bikes bike-point))))
 
 (defn closest-bike-points [{:keys [data]}]
   (->>
