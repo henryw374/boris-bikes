@@ -1,6 +1,7 @@
 (ns leyton-boris-bikes.system
   (:require [leyton-boris-bikes.routes :as routes]
             [integrant.core :as integrant]
+            [clojure.tools.logging :as log]
             [yada.yada :as yada])
   (:gen-class))
 
@@ -8,6 +9,7 @@
   {:sys/server {:port (Integer/parseInt (or port "3000"))}})
 
 (defmethod integrant/init-key :sys/server [_ opts]
+  (log/infof "starting server on port  %d" (:port opts) )
   (yada/listener (routes/routes) opts))
 
 (defmethod integrant/halt-key! :sys/server [_ server]
