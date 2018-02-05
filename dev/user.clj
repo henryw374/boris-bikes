@@ -1,6 +1,5 @@
  (ns user
-   (:require [clj-http.client :as client]
-             [leyton-boris-bikes.system :as sys]
+   (:require [leyton-boris-bikes.system :as sys]
              [clojure.tools.namespace.repl :as tools.repl]
              [integrant.core :as integrant]))
  
@@ -17,6 +16,4 @@
 
 (defn reset []
   (when system (stop))
-  (tools.repl/refresh :after 'user/start)
-  ;(stest/instrument)
-  )
+  (tools.repl/refresh :after 'user/start))
