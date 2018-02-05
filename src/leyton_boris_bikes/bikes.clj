@@ -2,7 +2,8 @@
   (:require [clj-http.client :as client]
             [cheshire.core :as cheshire]
             [clojure.spec.alpha :as s]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [orchestra.core :refer [defn-spec]]))
 
 (s/def ::lat double?)
 (s/def ::lon double?)
@@ -36,6 +37,7 @@
           (throw (ex-info "failed to get bike data" response))))
       (catch Exception e
         (log/info e)
+        ; handy for me developing on the train without a connection. In reality might improve by caching the last good response
         {:data (slurp "resources/sample-bike-data.json")
          :status :stale}))
     (update :data cheshire/parse-string true)))
@@ -58,7 +60,7 @@
       (update :url #(str tfl-host %))
       (assoc :availableBikes (number-of-available-bikes bike-point))))
 
-(defn closest-bike-points [{:keys [data]}]
+(defn closest-bike-points [data]
   (->>
     data
     (mapv #(assoc % :distance (distance centre-location %)))
@@ -66,12 +68,13 @@
     (take max-bike-points)
     (mapv shape-for-client)))
 
-(s/fdef bike-points-with-availability 
-  :ret  (s/every ::bike-point
+(s/def ::bike-points-result 
+  (s/every ::bike-point
                     :min-count 1
                     :max-count max-bike-points
                     :distinct true))
 
-(defn bike-points-with-availability []
-  (-> (bike-data)
-      (closest-bike-points)))
+(defn-spec bike-points-with-availability ::bike-points-result [ctx map?]
+  (let [{:keys [data status]} (bike-data)]
+    ; todo - could use status to decide if to return stale response code
+    (closest-bike-points data)))

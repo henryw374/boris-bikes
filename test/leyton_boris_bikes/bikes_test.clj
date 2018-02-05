@@ -1,7 +1,6 @@
 (ns leyton-boris-bikes.bikes-test
   (:require [clojure.test :refer :all]
             [orchestra.spec.test :as stest]
-      
             [leyton-boris-bikes.bikes :as sut]))
 
 (stest/instrument)
@@ -13,4 +12,4 @@
 
 (deftest no-auth-happy 
   (testing "will test result conforms to spec. todo - avoid making acutal http request"
-     (sut/bike-points-with-availability)))
+     (sut/bike-points-with-availability {})))
